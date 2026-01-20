@@ -20,9 +20,13 @@ app.use(cors(corsOptions)); // Middleware to enable CORS
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
+
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/workout", workoutRoutes);
+
+console.log("MONGO_URI:", process.env.MONGO_URI);
 
 // MongoDB Connection
 mongoose
