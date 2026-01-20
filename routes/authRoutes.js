@@ -46,6 +46,10 @@ const router = express.Router();
 //   }
 // );
 
+app.get('/test-env', (req, res) => {
+  res.send(process.env.MONGO_URI || "Variable not found");
+});
+
 
 router.post(
   "/register",
