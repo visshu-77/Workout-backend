@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
 
   workouts: [workoutSchema],
 
-  height: { type: Number }, // cm
-  weight: { type: Number }, // kg
+  height: { type: Number }, 
+  weight: { type: Number }, 
   age: { type: Number },
   gender: { type: String }, // optional
 
