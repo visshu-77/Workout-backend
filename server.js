@@ -38,10 +38,6 @@ const app = express();
 
 require("dotenv").config();
 
-// const cors = require("cors");
-
-// app.use(cors());
-
 const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
@@ -49,15 +45,9 @@ const workoutRoutes = require("./routes/workoutRoutes");
 const testRoutes = require("./routes/testRoutes");
 
 /* Test Routes for cloudinary */
-
-app.use(cors({
-origin: ["https://gymconsistency.netlify.app/"],
-methods: ["GET", "POST", "PUT", "DELETE"],
-credentials: true
-}));
-
 app.use("/api/test", testRoutes);
 
+app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
