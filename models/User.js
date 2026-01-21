@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema({
 
   password: { type: String, required: true },
 
-  profileImage: { type: String },
+  profileImage: { type: String, required: true },
 
-  workoutTime: { type: String }, // e.g. "Morning 6 AM"
+  workoutTime: { type: String, required: true }, // e.g. "Morning 6 AM"
 
   streak: { type: Number, default: 0 },
 
