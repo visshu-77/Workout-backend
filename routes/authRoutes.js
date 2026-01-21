@@ -66,7 +66,7 @@ router.post(
 
       let profileImageUrl = null;
 
-      // ✅ Upload profile image to Cloudinary (if exists)
+      // ✅ Upload profile image to Cloudinary
       if (req.file) {
         const result = await cloudinary.uploader.upload(
           `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
