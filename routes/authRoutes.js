@@ -3,11 +3,16 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const upload = require("../config/multer");
+// use memory multer + streamifier + cloudinary for uploads
+const multer = require("multer");
+const streamifier = require("streamifier");
+const cloudinary = require("../config/cloudinary");
 const sendWelcomeEmail = require("../utils/sendWelcomeEmail");
 
-
 const router = express.Router();
+const memoryStorage = multer.memoryStorage();
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const upload = multer({ storage: memoryStorage, limits: { fileSize: MAX_FILE_SIZE } });
 
 // REGISTER
 // router.post(
@@ -62,13 +67,30 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // Upload image to Cloudinary if provided
+      let profileImageUrl = null;
+      if (req.file) {
+        try {
+          const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: "daily_workout_profile_images" },
+              (error, result) => (error ? reject(error) : resolve(result))
+            );
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+          });
+          profileImageUrl = uploadResult.secure_url;
+        } catch (uploadErr) {
+          console.error("Cloudinary upload failed:", uploadErr);
+        }
+      }
+
       const user = await User.create({
         name,
         email,
         mobile,
         workoutTime,
         password: hashedPassword,
-        profileImage: req.file ? req.file.filename : null,
+        profileImage: profileImageUrl,
       });
 
       // Email should NOT break registration
