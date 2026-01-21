@@ -18,12 +18,13 @@
 // module.exports = upload;
 
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 // ✅ MEMORY storage (required for serverless)
 const storage = multer.memoryStorage();
 
 const upload = multer({
-  storage,
+  storage :CloudinaryStorage,
   // limits: {
   //   fileSize: 10 * 1024 * 1024, // 5MB limit
   // },
