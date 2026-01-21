@@ -1,23 +1,61 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+// const express = require("express");
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+// const User = require("../models/User");
 
-const upload = require("../config/multer");
-const sendWelcomeEmail = require("../utils/sendWelcomeEmail");
+// const upload = require("../config/multer");
+// const sendWelcomeEmail = require("../utils/sendWelcomeEmail");
 
-const crypto = require("crypto");
+// const crypto = require("crypto");
 
 
-const router = express.Router();
+// const router = express.Router();
 
-// REGISTER
+// // REGISTER
+// // router.post(
+// //   "/register",
+// //   upload.single("profileImage"),
+// //   async (req, res) => {
+// //     try {
+// //       const { name, email, password, mobile, workoutTime } = req.body;
+
+// //       const existingUser = await User.findOne({ email });
+// //       if (existingUser) {
+// //         return res.status(400).json({ message: "User already exists" });
+// //       }
+
+// //       const hashedPassword = await bcrypt.hash(password, 10);
+
+// //       const user = await User.create({
+// //         name,
+// //         email,
+// //         mobile,
+// //         workoutTime,
+// //         password: hashedPassword,
+// //         profileImage: req.file ? req.file.filename : null,
+// //       });
+
+// //       // 📧 Send welcome email
+// //       await sendWelcomeEmail(email, name);
+
+// //       res.json({ message: "User registered successfully" });
+// //     } catch (error) {
+// //       console.error(error);
+// //       res.status(500).json({ message: "Registration failed" });
+// //     }
+// //   }
+// // );
+
+
+// const cloudinary = require("../config/cloudinary");
+
 // router.post(
 //   "/register",
 //   upload.single("profileImage"),
 //   async (req, res) => {
 //     try {
 //       const { name, email, password, mobile, workoutTime } = req.body;
+
 
 //       const existingUser = await User.findOne({ email });
 //       if (existingUser) {
@@ -26,36 +64,205 @@ const router = express.Router();
 
 //       const hashedPassword = await bcrypt.hash(password, 10);
 
+//       // let profileImageUrl = null;
+
+//       // // ✅ Upload profile image to Cloudinary (if exists)
+//       // if (req.file) {
+//       //   const result = await cloudinary.uploader.upload(
+//       //     `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+//       //     {
+//       //       folder: "profile-images",
+//       //     }
+//       //   );
+//       //   profileImageUrl = result.secure_url;
+//       // }
+
+//       // if(!(profileImageUrl)){
+//       //   return res.status(400).json({ message: "profile image is required "});
+//       // }
+
+//       let profileImageUrl = null;
+//       if (req.file) {
+//         try {
+//           const uploadResult = await new Promise((resolve, reject) => {
+//             const uploadStream = cloudinary.uploader.upload_stream(
+//               { folder: "daily_workout_profile_images" },
+//               (error, result) => (error ? reject(error) : resolve(result))
+//             );
+//             streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+//           });
+//           profileImageUrl = uploadResult.secure_url;
+//         } catch (uploadErr) {
+//           console.error("Cloudinary upload failed:", uploadErr);
+//         }
+//       }
+
 //       const user = await User.create({
 //         name,
 //         email,
 //         mobile,
 //         workoutTime,
 //         password: hashedPassword,
-//         profileImage: req.file ? req.file.filename : null,
+//         profileImage: profileImageUrl,
 //       });
 
-//       // 📧 Send welcome email
-//       await sendWelcomeEmail(email, name);
+//       // Email should NOT break registration
+//       try {
+//         await sendWelcomeEmail(email, name);
+//       } catch (emailError) {
+//         console.error("Welcome email failed:", emailError.message);
+//       }
 
-//       res.json({ message: "User registered successfully" });
+//       res.status(201).json({ message: "User registered successfully" });
 //     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ message: "Registration failed" });
+//       console.error("REGISTER ERROR:", error);
+//       res.status(500).json({ message: "Registration failed", error: error });
 //     }
 //   }
 // );
 
 
+
+
+
+// // LOGIN
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res.status(400).json({ message: "User not found" });
+//     }
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
+//     res.json({
+//       token,
+//       user: {
+//         id: user._id,
+//         name: user.name,
+//         email: user.email,
+//         streak: user.streak,
+//         workouts: user.workouts
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Login failed" });
+//   }
+// });
+
+
+
+// router.post("/forgot-password", async (req, res) => {
+//   const user = await User.findOne({ email: req.body.email });
+//   if (!user) return res.json({ message: "If email exists, link sent" });
+
+//   const token = crypto.randomBytes(32).toString("hex");
+//   user.resetToken = token;
+//   user.resetTokenExpiry = Date.now() + 15 * 60 * 1000;
+//   await user.save();
+
+//   const resetLink = `https://gymconsistency.netlify.app//reset-password/${token}`;
+
+//   await sendWelcomeEmail(
+//     user.email,
+//     user.name,
+//     resetLink,
+//     true
+//   );
+
+//   res.json({ message: "Reset link sent" });
+// });
+
+
+// router.post("/reset-password/:token", async (req, res) => {
+//   const user = await User.findOne({
+//     resetToken: req.params.token,
+//     resetTokenExpiry: { $gt: Date.now() },
+//   });
+
+//   if (!user) {
+//     return res.status(400).json({ message: "Invalid or expired token" });
+//   }
+
+//   user.password = await bcrypt.hash(req.body.password, 10);
+//   user.resetToken = null;
+//   user.resetTokenExpiry = null;
+//   await user.save();
+
+//   res.json({ message: "Password updated" });
+// });
+
+
+// module.exports = router;
+
+
+
+
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+
+// use memory multer + streamifier + cloudinary for uploads
+const multer = require("multer");
+const streamifier = require("streamifier");
 const cloudinary = require("../config/cloudinary");
+const sendWelcomeEmail = require("../utils/sendWelcomeEmail");
+
+const router = express.Router();
+const memoryStorage = multer.memoryStorage();
+const upload = multer({ storage: memoryStorage });
+
+// REGISTER
+// router.post(
+// "/register",
+// upload.single("profileImage"),
+// async (req, res) => {
+// try {
+// const { name, email, password, mobile, workoutTime } = req.body;
+
+// const existingUser = await User.findOne({ email });
+// if (existingUser) {
+// return res.status(400).json({ message: "User already exists" });
+// }
+
+// const hashedPassword = await bcrypt.hash(password, 10);
+
+// const user = await User.create({
+// name,
+// email,
+// mobile,
+// workoutTime,
+// password: hashedPassword,
+// profileImage: req.file ? req.file.filename : null,
+// });
+
+// // 📧 Send welcome email
+// await sendWelcomeEmail(email, name);
+
+// res.json({ message: "User registered successfully" });
+// } catch (error) {
+// console.error(error);
+// res.status(500).json({ message: "Registration failed" });
+// }
+// }
+// );
 
 router.post(
   "/register",
   upload.single("profileImage"),
+
   async (req, res) => {
+    console.log("REGISTER REQ BODY:")
     try {
       const { name, email, password, mobile, workoutTime } = req.body;
-
 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -64,23 +271,7 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // let profileImageUrl = null;
-
-      // // ✅ Upload profile image to Cloudinary (if exists)
-      // if (req.file) {
-      //   const result = await cloudinary.uploader.upload(
-      //     `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-      //     {
-      //       folder: "profile-images",
-      //     }
-      //   );
-      //   profileImageUrl = result.secure_url;
-      // }
-
-      // if(!(profileImageUrl)){
-      //   return res.status(400).json({ message: "profile image is required "});
-      // }
-
+      // Upload image to Cloudinary if provided
       let profileImageUrl = null;
       if (req.file) {
         try {
@@ -116,19 +307,17 @@ router.post(
       res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
       console.error("REGISTER ERROR:", error);
-      res.status(500).json({ message: "Registration failed", error: error });
+      res.status(500).json({ message: "Registration failed" });
     }
   }
 );
-
-
-
-
 
 // LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("LOGIN REQ BODY:", req.body);
+
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -156,7 +345,6 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Login failed" });
   }
 });
-
 
 
 router.post("/forgot-password", async (req, res) => {
