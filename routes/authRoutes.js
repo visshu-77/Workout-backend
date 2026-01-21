@@ -56,6 +56,7 @@ router.post(
     try {
       const { name, email, password, mobile, workoutTime } = req.body;
 
+
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
@@ -74,6 +75,10 @@ router.post(
           }
         );
         profileImageUrl = result.secure_url;
+      }
+
+      if(!(profileImageUrl)){
+        return res.status(400).json({ message: "profile image is required "});
       }
 
       const user = await User.create({
