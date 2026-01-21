@@ -34,6 +34,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+const app = express();
+
 require("dotenv").config();
 
 const cors = require("cors");
@@ -43,7 +45,6 @@ app.use(cors());
 const authRoutes = require("./routes/authRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
 
-const app = express();
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
