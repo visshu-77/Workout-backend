@@ -44,7 +44,11 @@ app.use(cors());
 
 const authRoutes = require("./routes/authRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
+const testRoutes = require("./routes/testRoutes");
 
+/* Test Routes for cloudinary */
+
+app.use("/api/test", testRoutes);
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));

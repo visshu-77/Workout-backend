@@ -47,6 +47,8 @@ const router = express.Router();
 // );
 
 
+const cloudinary = require("../config/cloudinary");
+
 router.post(
   "/register",
   upload.single("profileImage"),
@@ -61,13 +63,26 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      let profileImageUrl = null;
+
+      // ✅ Upload profile image to Cloudinary (if exists)
+      if (req.file) {
+        const result = await cloudinary.uploader.upload(
+          `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+          {
+            folder: "profile-images",
+          }
+        );
+        profileImageUrl = result.secure_url;
+      }
+
       const user = await User.create({
         name,
         email,
         mobile,
         workoutTime,
         password: hashedPassword,
-        profileImage: req.file ? req.file.filename : null,
+        profileImage: profileImageUrl,
       });
 
       // Email should NOT break registration
@@ -84,6 +99,8 @@ router.post(
     }
   }
 );
+
+
 
 
 
