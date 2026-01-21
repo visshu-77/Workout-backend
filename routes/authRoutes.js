@@ -147,7 +147,7 @@ router.post("/forgot-password", async (req, res) => {
   user.resetTokenExpiry = Date.now() + 15 * 60 * 1000;
   await user.save();
 
-  const resetLink = `http://localhost:5173/reset-password/${token}`;
+  const resetLink = `https://gymconsistency.netlify.app//reset-password/${token}`;
 
   await sendWelcomeEmail(
     user.email,
