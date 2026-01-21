@@ -64,38 +64,38 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // let profileImageUrl = null;
-
-      // // ✅ Upload profile image to Cloudinary (if exists)
-      // if (req.file) {
-      //   const result = await cloudinary.uploader.upload(
-      //     `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-      //     {
-      //       folder: "profile-images",
-      //     }
-      //   );
-      //   profileImageUrl = result.secure_url;
-      // }
-
-      // if(!(profileImageUrl)){
-      //   return res.status(400).json({ message: "profile image is required "});
-      // }
-
       let profileImageUrl = null;
+
+      // ✅ Upload profile image to Cloudinary (if exists)
       if (req.file) {
-        try {
-          const uploadResult = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-              { folder: "daily_workout_profile_images" },
-              (error, result) => (error ? reject(error) : resolve(result))
-            );
-            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-          });
-          profileImageUrl = uploadResult.secure_url;
-        } catch (uploadErr) {
-          console.error("Cloudinary upload failed:", uploadErr);
-        }
+        const result = await cloudinary.uploader.upload(
+          `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+          {
+            folder: "profile-images",
+          }
+        );
+        profileImageUrl = result.secure_url;
       }
+
+      if(!(profileImageUrl)){
+        return res.status(400).json({ message: "profile image is required "});
+      }
+
+      // let profileImageUrl = null;
+      // if (req.file) {
+      //   try {
+      //     const uploadResult = await new Promise((resolve, reject) => {
+      //       const uploadStream = cloudinary.uploader.upload_stream(
+      //         { folder: "daily_workout_profile_images" },
+      //         (error, result) => (error ? reject(error) : resolve(result))
+      //       );
+      //       streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+      //     });
+      //     profileImageUrl = uploadResult.secure_url;
+      //   } catch (uploadErr) {
+      //     console.error("Cloudinary upload failed:", uploadErr);
+      //   }
+      // }
 
       const user = await User.create({
         name,
