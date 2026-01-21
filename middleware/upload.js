@@ -13,7 +13,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 3 * 1024 * 1024, // ⛔ keep under 3MB
+    fileSize: 10 * 1024 * 1024, // ⛔ keep under 3MB
   },
 });
 
